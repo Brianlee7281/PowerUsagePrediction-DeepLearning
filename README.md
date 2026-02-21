@@ -1,1 +1,16 @@
 # PowerUsagePrediction-DeepLearning
+
+## Code Explanation
+
+### Preprocessing
+- I extracted the 'time' feature from the 'date_time' column, which was originally an object type, and converted it into an integer type. This allows the model to treat 'time' as a numerical feature for regression.
+- K-Means Clustering was utilized to create a new categorical feature from the input data. By grouping similar data points, this clustering step aims to capture underlying patterns or segments within the input features that might influence power consumption, providing additional context to the model.
+- Feature scaling was done using RobustScaler to normalize numerical features, preprocessing them for training. RobustScaler is particularly useful because it scales data using the median and interquartile range, making it robust to outliers in the dataset, which can often be present in real-world sensor data.
+- Then, processed Numpy arrays were converted into PyTorch tensors, which are the required input format for PyTorch deep learning models.
+
+### Deep Learning Model
+- The model is a Multilayer Perceptron (MLP) defined by the class, consisting of 5 hidden layers with increasing and then decreasing neuron counts (64 -> 128 -> 128 -> 64 -> 32). Each hidden layer uses the Rectified Linear Unit (ReLU) activation function, which helps introduce non-linearity and mitigate the vanishing gradient problem. Batch Normalization is applied after each hidden layer to stabilize and accelerate training by normalizing the inputs to that layer. Dropout  is also used after each hidden layer as a regularization technique to prevent overfitting by randomly setting a fraction of input units to 0 at each update during training.
+- Mean Squared Error was used as the loss function to measure the difference between predicted and actual power consumption. MSE is a common choice for regression tasks as it penalizes larger errors more heavily, driving the model to make more accurate predictions.
+- The Adam optimizer (optim.Adam) with a learning rate of 0.001 and weight decay of 0.1 was used to update model weights. Adam is an adaptive learning rate optimization algorithm that computes individual adaptive learning rates for different parameters from estimates of first and second moments of the gradients. Weight decay (L2 regularization) is included to further prevent overfitting by adding a penalty to the loss function that discourages large weights.
+- A learning rate scheduler (torch.optim.lr_scheduler.StepLR) was implemented to adjust the learning rate during training. Specifically, it reduces the learning rate by a factor of gamma (0.1) every step_size (2) epochs. This helps the model converge more effectively by allowing it to take larger steps early in training and smaller, more precise steps as it approaches the optimum.
+- Training was performed for 50 epochs, iterating through the training data in batches. During each epoch, the model processes data in batches, calculates the loss, performs backpropagation, and updates its weights. The model was periodically evaluated on a validation set (though not explicitly shown in the provided training loop with early stopping logic) to assess its performance and monitor for signs of overfitting. The elapsed time for the entire training process was also measured.
